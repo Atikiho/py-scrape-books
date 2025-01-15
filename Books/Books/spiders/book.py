@@ -11,7 +11,7 @@ class BookSpider(scrapy.Spider):
             book_detailed_url = response.urljoin(book.css("a::attr(href)").get())
             yield scrapy.Request(book_detailed_url, callback=self.parse_book)
 
-        next_page = response.css(".pager a::attr(href)").getall()[-1]
+        next_page = response.css("li.next a::attr(href)").get()
         if next_page:
             next_page_url = response.urljoin(next_page)
             yield scrapy.Request(next_page_url, callback=self.parse)
@@ -35,7 +35,7 @@ class BookSpider(scrapy.Spider):
 
         rating = mapping[response.css("p.star-rating::attr(class)").get().split()[-1]]
         category = response.css("ul.breadcrumb a::text").getall()[-1]
-        description = response.css("p:not([class]):not([id])::text").getall()[-1]
+        description = response.css(".product_page > p::text").getall()[-1]
         upc = response.css("td::text").get()
 
         yield {
